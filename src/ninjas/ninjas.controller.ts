@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   Query,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CreateNinjaDto } from './dto/create-ninja.dto';
 import { UpdateNinjaDto } from './dto/update-ninja.dto';
@@ -21,20 +22,22 @@ export class NinjasController {
   }
 
   @Get(':id')
-  getoneninja(@Param('id') id: string) {
-    return { id };
+  getNinja(@Param('id') id: string) {
+    return this.ninjaservice.getNinja(+id);
   }
 
   @Post()
-  createninja(@Body() createninja: CreateNinjaDto) {
-    return { name: createninja.name };
+  createninja(@Body(new ValidationPipe()) createninja: CreateNinjaDto) {
+    return this.ninjaservice.createninja(createninja);
   }
 
   @Put(':id')
   updateninja(@Param('id') id: string, @Body() updateninja: UpdateNinjaDto) {
-    return { id: id, name: updateninja.name };
+    return this.ninjaservice.updateninja(+id, updateninja);
   }
 
   @Delete(':id')
-  deleteninja() {}
+  deleteninja(@Param('id') id: string) {
+    return this.ninjaservice.removeninja(+id);
+  }
 }

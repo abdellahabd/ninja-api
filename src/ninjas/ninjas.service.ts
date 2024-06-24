@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateNinjaDto } from './dto/create-ninja.dto';
 import { UpdateNinjaDto } from './dto/update-ninja.dto';
 
@@ -18,7 +18,11 @@ export class NinjasService {
     const ninja = this.ninjas.find((ninja) => ninja.id == id);
 
     if (!ninja) {
-      throw new Error('ninija not found');
+      try {
+        throw new Error('ninija not found');
+      } catch (error) {
+        throw new NotFoundException('ninja not found');
+      }
     }
 
     return ninja;
@@ -32,16 +36,17 @@ export class NinjasService {
 
   updateninja(id: number, updateninja: UpdateNinjaDto) {
     this.ninjas = this.ninjas.map((ninja) => {
-      if (ninja.id == id) {
-        return { ...updateninja, ...ninja };
+      if (ninja.id === id) {
+        return { ...ninja, ...updateninja };
       }
       return ninja;
     });
+    return this.getNinja(id);
   }
 
   removeninja(id: number) {
-    const removeninja = this.getNinja(id);
+    const removedNinja = this.getNinja(id);
     this.ninjas = this.ninjas.filter((ninja) => ninja.id !== id);
-    return removeninja;
+    return removedNinja;
   }
 }
